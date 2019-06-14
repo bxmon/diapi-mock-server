@@ -1,21 +1,22 @@
-package main
+package storage
 
 import (
 	"testing"
 	"time"
 
+	"github.com/bxmon/diapi-mock-server/model"
 	"github.com/google/go-cmp/cmp"
 )
 
-func TestRepository(t *testing.T) {
-	storage := NewStorage("account.db")
-	defer storage.boltDB.Close()
+func TestStorage(t *testing.T) {
+	s := NewStorage("account.db", "accountbucket")
+	defer s.BoltDB.Close()
 
-	user := User{
+	user := model.User{
 		ID:         1,
 		FirstName:  "Test 01",
-		LastName:   "User",
-		FullName:   "User Test 01",
+		LastName:   "model.User",
+		FullName:   "model.User Test 01",
 		Email:      "test.user@example.com",
 		ProfilePic: "https://example.com/test/profile.png",
 		CreateAt:   time.Now(),
@@ -23,12 +24,12 @@ func TestRepository(t *testing.T) {
 	}
 
 	t.Run("Add/Get user", func(t *testing.T) {
-		err := storage.AddNewUser(&user)
+		err := s.AddNewUser(&user)
 		if err != nil {
 			t.Errorf("Error occurs while insert new user : %v", err)
 		}
 
-		insertedUser, err := storage.GetUserByID(1)
+		insertedUser, err := s.GetUserByID(1)
 		if err != nil {
 			t.Errorf("Error occurs while query new inserted user : %v", err)
 		}
@@ -40,12 +41,12 @@ func TestRepository(t *testing.T) {
 
 	t.Run("Replace/Get user", func(t *testing.T) {
 		for i := 0; i < 3; i++ {
-			if err := storage.ReplaceUser(&user); err != nil {
+			if err := s.ReplaceUser(&user); err != nil {
 				t.Errorf("Error occurs while replace user : %v", err)
 			}
 		}
 
-		insertedUser, err := storage.GetUserByID(1)
+		insertedUser, err := s.GetUserByID(1)
 		if err != nil {
 			t.Errorf("Error occurs while query new inserted user : %v", err)
 		}
@@ -57,11 +58,11 @@ func TestRepository(t *testing.T) {
 
 	t.Run("Update/Get user", func(t *testing.T) {
 		user.FullName = "Thao Nguyen"
-		if err := storage.UpdateUser(&user); err != nil {
+		if err := s.UpdateUser(&user); err != nil {
 			t.Errorf("Error occurs while update user : %v", err)
 		}
 
-		insertedUser, err := storage.GetUserByID(1)
+		insertedUser, err := s.GetUserByID(1)
 		if err != nil {
 			t.Errorf("Error occurs while query new inserted user : %v", err)
 		}
@@ -72,12 +73,12 @@ func TestRepository(t *testing.T) {
 	})
 
 	t.Run("Delete/Get user", func(t *testing.T) {
-		err := storage.DeleteUserByID(1)
+		err := s.DeleteUserByID(1)
 		if err != nil {
 			t.Errorf("Error occurs while delete user with id 1 : %v", err)
 		}
 
-		searchUser, err := storage.GetUserByID(1)
+		searchUser, err := s.GetUserByID(1)
 		if err.Error() != "No user with id 1" {
 			t.Errorf("Error occurs while query user with id 1 : %v", err)
 		}
@@ -90,12 +91,12 @@ func TestRepository(t *testing.T) {
 	t.Run("Add/Get multiple user", func(t *testing.T) {
 		for i := 1; i < 5; i++ {
 			user.ID = i
-			if err := storage.AddNewUser(&user); err != nil {
+			if err := s.AddNewUser(&user); err != nil {
 				t.Errorf("Error occurs while insert new user : %v", err)
 			}
 		}
 
-		users, err := storage.GetAllUsers()
+		users, err := s.GetAllUsers()
 		if err != nil {
 			t.Errorf("Error occurs while get all user detail : %v", err)
 		}
