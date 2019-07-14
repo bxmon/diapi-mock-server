@@ -53,6 +53,19 @@ func NewRouters(c *controller.Controller, e *gin.Engine) {
 func GetRoutes(c *controller.Controller) []AppRoute {
 	return []AppRoute{
 		AppRoute{
+			Group:            "",
+			GroupMiddlewares: []gin.HandlerFunc{},
+			Routes: []Route{
+				Route{
+					Method:  "GET",
+					Pattern: "/ping",
+					RouteMiddlewares: []gin.HandlerFunc{
+						c.PingHandler,
+					},
+				},
+			},
+		},
+		AppRoute{
 			Group:            "/api/v1",
 			GroupMiddlewares: []gin.HandlerFunc{},
 			Routes: []Route{

@@ -18,6 +18,11 @@ func NewController(service *service.Service) *Controller {
 	return &Controller{service: service}
 }
 
+// PingHandler handles ping server action
+func (c *Controller) PingHandler(cx *gin.Context) {
+	cx.JSON(http.StatusOK, gin.H{"message": "Mock server is running."})
+}
+
 // AddUserHandler handles add new user action
 func (c *Controller) AddUserHandler(cx *gin.Context) {
 	reqUser := new(model.User)
