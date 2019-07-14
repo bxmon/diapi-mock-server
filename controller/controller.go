@@ -42,13 +42,25 @@ func (c *Controller) AddUserHandler(cx *gin.Context) {
 
 // GetUsersHandler handles get users action
 func (c *Controller) GetUsersHandler(cx *gin.Context) {
+	sLimit := cx.Query("limit")
 	users, err := c.service.GetAllUsers()
 	if err != nil {
 		cx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Cannot get all users"})
 		return
 	}
 
-	cx.JSON(http.StatusOK, gin.H{"users": users})
+	if sLimit != "" {
+		if iLimit, err := strconv.Atoi(sLimit); err == nil {
+			cx.JSON(http.StatusOK, gin.H{"users": users[:iLimit]})
+			return
+		}
+
+		cx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Cannot get all users"})
+		return
+	}
+
+	// Slice the first 4 element for testing purpose
+	cx.JSON(http.StatusOK, gin.H{"users": users[:4]})
 }
 
 // GetUserByIDHandler handles get user by id action
