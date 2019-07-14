@@ -92,6 +92,46 @@ func (s *Storage) GetUserByID(userID int) (*model.User, error) {
 	return &user, nil
 }
 
+// GetUsersByIDs gets user by userid from database
+func (s *Storage) GetUsersByIDs(userIDs []int) ([]model.User, error) {
+	// Allocate an empty user instance
+	var users []model.User
+
+	for _, userID := range userIDs {
+		// Generate a key
+		key := strconv.Itoa(userID)
+
+		var user model.User
+
+		// Read an object from the bucket using BoltDB.View
+		err := s.BoltDB.View(func(tx *bolt.Tx) error {
+			// Read the bucket from the DB
+			b := tx.Bucket(s.bucket)
+
+			// Read the value identified by our userId supplied as []byte
+			accountBytes := b.Get([]byte(key))
+			if accountBytes == nil {
+				return fmt.Errorf("No user with id %d", userID)
+			}
+
+			// Unmarshal the returned bytes into the user struct we created at
+			// the top of the function
+			json.Unmarshal(accountBytes, &user)
+
+			// Return nil to indicate nothing went wrong, e.g no error
+			return nil
+		})
+
+		// If there were an error, return the error
+		if err == nil {
+			users = append(users, user)
+		}
+	}
+
+	// Return the user struct and nil as error.
+	return users, nil
+}
+
 // GetAllUsers gets all user from database
 func (s *Storage) GetAllUsers() ([]*model.User, error) {
 

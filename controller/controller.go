@@ -2,6 +2,7 @@ package controller
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/bxmon/diapi-mock-server/model"
 	"github.com/bxmon/diapi-mock-server/service"
@@ -69,6 +70,34 @@ func (c *Controller) GetUserByIDHandler(cx *gin.Context) {
 	}
 
 	cx.JSON(http.StatusOK, gin.H{"userDetails": user})
+}
+
+// GetUsersByIDsHandler handles get user by id action
+func (c *Controller) GetUsersByIDsHandler(cx *gin.Context) {
+	uids, hasAny := cx.GetQueryArray("uid")
+	if !hasAny {
+		cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Request params are required"})
+		return
+	}
+
+	var userIDs []int
+
+	for _, uid := range uids {
+		userID, err := strconv.Atoi(uid)
+		if err != nil {
+			cx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"message": "Cannot bind request params"})
+			return
+		}
+		userIDs = append(userIDs, userID)
+	}
+
+	users, err := c.service.GetUsersByIDs(userIDs)
+	if err != nil {
+		cx.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"message": "Cannot filters users by ids"})
+		return
+	}
+
+	cx.JSON(http.StatusOK, gin.H{"users": users})
 }
 
 // UpdateUserHandler handles update user action

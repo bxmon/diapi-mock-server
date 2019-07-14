@@ -70,10 +70,10 @@ func GetRoutes(c *controller.Controller) []AppRoute {
 			GroupMiddlewares: []gin.HandlerFunc{},
 			Routes: []Route{
 				Route{
-					Method:  "POST",
-					Pattern: "/users/register",
+					Method:  "GET",
+					Pattern: "/users-filter",
 					RouteMiddlewares: []gin.HandlerFunc{
-						c.AddUserHandler,
+						c.GetUsersByIDsHandler,
 					},
 				},
 				Route{
@@ -81,6 +81,20 @@ func GetRoutes(c *controller.Controller) []AppRoute {
 					Pattern: "/users/:userid",
 					RouteMiddlewares: []gin.HandlerFunc{
 						c.GetUserByIDHandler,
+					},
+				},
+				Route{
+					Method:  "GET",
+					Pattern: "/users",
+					RouteMiddlewares: []gin.HandlerFunc{
+						c.GetUsersHandler,
+					},
+				},
+				Route{
+					Method:  "POST",
+					Pattern: "/users/register",
+					RouteMiddlewares: []gin.HandlerFunc{
+						c.AddUserHandler,
 					},
 				},
 				Route{
@@ -95,13 +109,6 @@ func GetRoutes(c *controller.Controller) []AppRoute {
 					Pattern: "/users/:userid",
 					RouteMiddlewares: []gin.HandlerFunc{
 						c.DeleteUserByIDHandler,
-					},
-				},
-				Route{
-					Method:  "GET",
-					Pattern: "/users",
-					RouteMiddlewares: []gin.HandlerFunc{
-						c.GetUsersHandler,
 					},
 				},
 			},

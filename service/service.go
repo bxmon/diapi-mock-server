@@ -25,6 +25,11 @@ func (s *Service) GetUserByID(userID int) (*model.User, error) {
 	return s.db.GetUserByID(userID)
 }
 
+// GetUsersByIDs handles get users
+func (s *Service) GetUsersByIDs(userIDs []int) ([]model.User, error) {
+	return s.db.GetUsersByIDs(userIDs)
+}
+
 // GetAllUsers handles get user by id
 func (s *Service) GetAllUsers() ([]*model.User, error) {
 	return s.db.GetAllUsers()
