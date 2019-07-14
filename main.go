@@ -32,6 +32,6 @@ func main() {
 	service := service.NewService(storage)
 	controller := controller.NewController(service)
 	server := SetUpEngine(controller)
-	fmt.Printf("Start gin server. Listen on port%s\n", ":5000")
-	server.Run(":5000")
+	fmt.Printf("Start gin server. Listen on port%s\n", port)
+	server.Run(port)
 }
