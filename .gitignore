@@ -12,3 +12,7 @@
 *.out
 .vscode
 *.db
+
+.env
+.docker_build/
+bin/

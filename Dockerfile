@@ -1,49 +1,21 @@
-# -------------------- Build --------------------
-# Start from Alpine Linux image with the latest version of Golang
-# Naming build stage as builder
-FROM golang:alpine as builder
+FROM heroku/heroku:18-build as build
 
-# Install Git for go get
-RUN set -eux;\
-  apk add --no-cache --virtual git &&\
-  apk add --no-cache --virtual curl
-
-# Set ENV
-ENV GOPATH /go/
-ENV GO_WORKDIR $GOPATH/src/diapi-mock-server
-
-# Set the Current Working Directory inside the container
-WORKDIR $GO_WORKDIR
-
-ENV GO111MODULE=on
-COPY go.mod .
-COPY go.sum .
-
-RUN go mod download
-
-# Copy everything from the current directory to the 
-# PWD (Present Working Directory) inside the container
-COPY . .
-
-# Build it
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go install
-
-# -------------------- Ready --------------------
-# Start from a raw Alpine Linux image
-FROM alpine:latest
-
-# Set ENV
-ENV PORT 5555
-
-# Install ca-certificates for ssl
-RUN set -eux; \
-  apk add --no-cache --virtual ca-certificates
-
-# Set WORKDIR to go execute directory
+COPY . /app
 WORKDIR /app
 
-# Copy binary from builder stage into image
-COPY --from=builder /go/bin/diapi-mock-server /app
+# Setup buildpack
+RUN mkdir -p /tmp/buildpack/heroku/go /tmp/build_cache /tmp/env
+RUN curl https://codon-buildpacks.s3.amazonaws.com/buildpacks/heroku/go.tgz | tar xz -C /tmp/buildpack/heroku/go
 
-EXPOSE $PORT
-ENTRYPOINT ./diapi-mock-server
+#Execute Buildpack
+RUN STACK=heroku-18 /tmp/buildpack/heroku/go/bin/compile /app /tmp/build_cache /tmp/env
+
+# Prepare final, minimal image
+FROM heroku/heroku:18
+
+COPY --from=build /app /app
+ENV HOME /app
+WORKDIR /app
+RUN useradd -m heroku
+USER heroku
+CMD /app/bin/diapi-mock-server

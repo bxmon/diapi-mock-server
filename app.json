@@ -1,0 +1,7 @@
+{
+  "name": "Diapi mock server",
+  "description": "Mock server for testing diAPI utility",
+  "keywords": ["mock server", "go", "utility", "diAPI"],
+  "website": "https://github.com/bxmon/diapi",
+  "repository": "https://github.com/bxmon/diapi"
+}
