@@ -98,6 +98,13 @@ func GetRoutes(c *controller.Controller) []AppRoute {
 					},
 				},
 				Route{
+					Method:  "PUT",
+					Pattern: "/users/:userid",
+					RouteMiddlewares: []gin.HandlerFunc{
+						c.UpdateUserHandler,
+					},
+				},
+				Route{
 					Method:  "PATCH",
 					Pattern: "/users/:userid",
 					RouteMiddlewares: []gin.HandlerFunc{
