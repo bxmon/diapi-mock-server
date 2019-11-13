@@ -157,3 +157,20 @@ func (c *Controller) DeleteUserByIDHandler(cx *gin.Context) {
 
 	cx.JSON(http.StatusOK, gin.H{"message": "Success"})
 }
+
+// CheckStatusHandler handles check status action
+func (c *Controller) CheckStatusHandler(cx *gin.Context) {
+	cx.Header("Content-Type", "application/json")
+	cx.Header("Content-Length", "123")
+	cx.AbortWithStatus(http.StatusOK)
+}
+
+// OptionsRequestHandler handles options request
+func (c *Controller) OptionsRequestHandler(cx *gin.Context) {
+	cx.Header("Access-Control-Allow-Origin", "*")
+	cx.Header("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS")
+	cx.Header("Access-Control-Allow-Headers", "authorization, origin, content-type, accept")
+	cx.Header("Allow", "HEAD,GET,POST,PUT,PATCH,DELETE,OPTIONS")
+	cx.Header("Content-Type", "application/json")
+	cx.AbortWithStatus(http.StatusOK)
+}

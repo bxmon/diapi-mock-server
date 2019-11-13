@@ -118,6 +118,20 @@ func GetRoutes(c *controller.Controller) []AppRoute {
 						c.DeleteUserByIDHandler,
 					},
 				},
+				Route{
+					Method:  "HEAD",
+					Pattern: "/users/status",
+					RouteMiddlewares: []gin.HandlerFunc{
+						c.CheckStatusHandler,
+					},
+				},
+				Route{
+					Method:  "OPTIONS",
+					Pattern: "/users/:userid",
+					RouteMiddlewares: []gin.HandlerFunc{
+						c.OptionsRequestHandler,
+					},
+				},
 			},
 		},
 	}
